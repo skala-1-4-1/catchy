@@ -11,12 +11,7 @@ import {
   getSessions,
   type ChatSession,
 } from "@/lib/chatStorage";
-
-// TODO: 실제 백엔드(/api/report) 연동 예정. 지금은 목업 응답만 반환.
-async function requestMockAnswer(prompt: string): Promise<string> {
-  await new Promise((resolve) => setTimeout(resolve, 900));
-  return `"${prompt}"에 대한 리뷰 분석 결과를 준비 중입니다. (임시 응답입니다)`;
-}
+import { requestReport } from "@/lib/api";
 
 export default function ChatApp() {
   const [sessions, setSessions] = useState<ChatSession[]>(() => getSessions());
@@ -41,8 +36,18 @@ export default function ChatApp() {
     setSessions(getSessions());
 
     setIsLoading(true);
-    const answer = await requestMockAnswer(content);
-    addMessageToSession(sessionId, { role: "assistant", content: answer });
+    console.log("[chat] 전송:", content);
+    try {
+      const answer = await requestReport(content);
+      console.log("[chat] 응답:", answer);
+      addMessageToSession(sessionId, { role: "assistant", content: answer });
+    } catch (error) {
+      console.error("[chat] 백엔드 요청 실패:", error);
+      addMessageToSession(sessionId, {
+        role: "assistant",
+        content: "백엔드 연결에 실패했습니다. 서버가 켜져 있는지 확인해주세요.",
+      });
+    }
     setSessions(getSessions());
     setIsLoading(false);
   }

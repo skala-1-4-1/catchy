@@ -58,9 +58,11 @@ export default function Sidebar({
         <button
           type="button"
           onClick={onNewChat}
-          className={`flex w-full items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800 ${
-            collapsed ? "justify-center px-0" : ""
-          }`}
+          className={
+            collapsed
+              ? "mx-auto flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 text-zinc-100 hover:bg-zinc-800"
+              : "flex w-full items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800"
+          }
         >
           <PlusIcon />
           {!collapsed && <span>새 채팅</span>}
