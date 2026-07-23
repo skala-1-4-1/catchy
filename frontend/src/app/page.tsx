@@ -1,3 +1,5 @@
+import ChatAppLoader from "@/components/ChatAppLoader";
+
 export default function Home() {
-  return <div className="flex flex-1" />;
+  return <ChatAppLoader />;
 }

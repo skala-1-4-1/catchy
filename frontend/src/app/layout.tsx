@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "frontend",
+  title: "이커머스",
   description: "",
 };
 
