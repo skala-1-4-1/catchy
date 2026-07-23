@@ -1,14 +1,23 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ChatRole } from "@/lib/chatStorage";
+import { useTypewriter } from "@/lib/useTypewriter";
 
 interface MessageBubbleProps {
   role: ChatRole;
   content: string;
+  streaming?: boolean;
+  onStreamComplete?: () => void;
 }
 
-export default function MessageBubble({ role, content }: MessageBubbleProps) {
+export default function MessageBubble({
+  role,
+  content,
+  streaming = false,
+  onStreamComplete,
+}: MessageBubbleProps) {
   const isUser = role === "user";
+  const displayedContent = useTypewriter(content, streaming && !isUser, onStreamComplete);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -18,7 +27,7 @@ export default function MessageBubble({ role, content }: MessageBubbleProps) {
         }`}
       >
         {isUser ? (
-          content
+          displayedContent
         ) : (
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -73,7 +82,7 @@ export default function MessageBubble({ role, content }: MessageBubbleProps) {
               ),
             }}
           >
-            {content}
+            {displayedContent}
           </ReactMarkdown>
         )}
       </div>

@@ -29,7 +29,11 @@ export default function Sidebar({
         collapsed ? "w-16" : "w-64"
       }`}
     >
-      <div className="flex items-center justify-between gap-2 px-3 py-3">
+      <div
+        className={`flex items-center gap-2 px-3 py-3 ${
+          collapsed ? "justify-center" : "justify-between"
+        }`}
+      >
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
             <Image

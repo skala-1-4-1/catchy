@@ -10,9 +10,17 @@ interface ChatViewProps {
   session: ChatSession;
   isLoading: boolean;
   onSend: (value: string) => void;
+  streamingMessageIndex?: number | null;
+  onStreamComplete?: () => void;
 }
 
-export default function ChatView({ session, isLoading, onSend }: ChatViewProps) {
+export default function ChatView({
+  session,
+  isLoading,
+  onSend,
+  streamingMessageIndex = null,
+  onStreamComplete,
+}: ChatViewProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,7 +32,13 @@ export default function ChatView({ session, isLoading, onSend }: ChatViewProps) 
       <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {session.messages.map((message, index) => (
-            <MessageBubble key={index} role={message.role} content={message.content} />
+            <MessageBubble
+              key={index}
+              role={message.role}
+              content={message.content}
+              streaming={index === streamingMessageIndex}
+              onStreamComplete={onStreamComplete}
+            />
           ))}
           {isLoading && <TypingIndicator />}
           <div ref={bottomRef} />

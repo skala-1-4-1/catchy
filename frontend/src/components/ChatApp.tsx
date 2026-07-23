@@ -18,8 +18,13 @@ export default function ChatApp() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingSessionId, setStreamingSessionId] = useState<string | null>(null);
 
   const activeSession = sessions.find((session) => session.id === activeSessionId) ?? null;
+  const streamingMessageIndex =
+    activeSession && activeSession.id === streamingSessionId
+      ? activeSession.messages.length - 1
+      : null;
 
   async function handleSend(content: string) {
     if (isLoading) return;
@@ -50,6 +55,7 @@ export default function ChatApp() {
     }
     setSessions(getSessions());
     setIsLoading(false);
+    setStreamingSessionId(sessionId);
   }
 
   function handleNewChat() {
@@ -77,7 +83,13 @@ export default function ChatApp() {
       />
       <main className="flex flex-1 flex-col overflow-hidden">
         {activeSession ? (
-          <ChatView session={activeSession} isLoading={isLoading} onSend={handleSend} />
+          <ChatView
+            session={activeSession}
+            isLoading={isLoading}
+            onSend={handleSend}
+            streamingMessageIndex={streamingMessageIndex}
+            onStreamComplete={() => setStreamingSessionId(null)}
+          />
         ) : (
           <Landing onSend={handleSend} isLoading={isLoading} />
         )}
