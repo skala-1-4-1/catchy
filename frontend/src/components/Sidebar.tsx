@@ -68,8 +68,8 @@ export default function Sidebar({
       </div>
 
       {!collapsed && (
-        <div className="mt-4 flex-1 overflow-y-auto px-2">
-          <p className="px-2 pb-1 text-xs font-medium text-zinc-500">채팅</p>
+        <div className="mt-20 flex-1 overflow-y-auto px-2 ">
+          <p className="px-2 pb-1 text-sm font-medium text-zinc-500">채팅</p>
           <ul className="flex flex-col gap-0.5">
             {sessions.map((session) => (
               <li key={session.id} className="group relative">
