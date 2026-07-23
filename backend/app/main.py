@@ -9,7 +9,7 @@ app = FastAPI(title="Ecommerce Review Agent API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000","https://catchy.vercel.app"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
