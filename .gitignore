@@ -1,0 +1,5 @@
+# claude code (personal settings only; settings.json stays shared)
+.claude/settings.local.json
+
+# os
+.DS_Store
