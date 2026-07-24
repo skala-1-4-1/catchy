@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 
-const ChatApp = dynamic(() => import("./ChatApp"), {
+const ReportApp = dynamic(() => import("./ReportApp"), {
   ssr: false,
   loading: () => <div className="h-dvh bg-zinc-900" />,
 });
 
-export default function ChatAppLoader() {
-  return <ChatApp />;
+export default function ReportAppLoader() {
+  return <ReportApp />;
 }
