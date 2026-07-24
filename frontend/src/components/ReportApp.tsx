@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReportView from "@/components/ReportView";
 import UploadPanel from "@/components/UploadPanel";
 import Sidebar from "@/components/Sidebar";
@@ -27,8 +27,24 @@ export default function ReportApp() {
   const [collapsed, setCollapsed] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [streamingSessionId, setStreamingSessionId] = useState<string | null>(null);
+  const [animatedSessionIds, setAnimatedSessionIds] = useState<Set<string>>(new Set());
+  const previousActiveSessionId = useRef<string | null>(null);
 
   const activeSession = sessions.find((session) => session.id === activeSessionId) ?? null;
+
+  function markAnimated(id: string) {
+    setAnimatedSessionIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+  }
+
+  useEffect(() => {
+    const previousId = previousActiveSessionId.current;
+    if (previousId && previousId !== activeSessionId && previousId === streamingSessionId) {
+      // navigated away mid-animation: don't let it resume/replay from the top later
+      markAnimated(previousId);
+      setStreamingSessionId(null);
+    }
+    previousActiveSessionId.current = activeSessionId;
+  }, [activeSessionId, streamingSessionId]);
 
   async function handleUpload(file: File) {
     if (isUploading) return;
@@ -80,8 +96,14 @@ export default function ReportApp() {
         {activeSession ? (
           <ReportView
             session={activeSession}
-            streaming={activeSession.id === streamingSessionId}
-            onStreamComplete={() => setStreamingSessionId(null)}
+            streaming={
+              activeSession.id === streamingSessionId &&
+              !animatedSessionIds.has(activeSession.id)
+            }
+            onStreamComplete={() => {
+              markAnimated(activeSession.id);
+              setStreamingSessionId(null);
+            }}
           />
         ) : (
           <UploadPanel onUpload={handleUpload} isLoading={isUploading} />

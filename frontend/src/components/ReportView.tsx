@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ReportSession } from "@/lib/reportStorage";
@@ -18,17 +18,39 @@ export default function ReportView({
   onStreamComplete,
 }: ReportViewProps) {
   const displayedResult = useTypewriter(session.result ?? "", streaming, onStreamComplete);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const shouldAutoScroll = useRef(true);
 
   useEffect(() => {
-    if (!streaming) return;
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (streaming) shouldAutoScroll.current = true;
+  }, [streaming, session.id]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    function handleScroll() {
+      if (!container) return;
+      const distanceFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      shouldAutoScroll.current = distanceFromBottom < 80;
+    }
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!streaming || !shouldAutoScroll.current) return;
+    const container = containerRef.current;
+    if (!container) return;
+    container.scrollTop = container.scrollHeight;
   }, [displayedResult, streaming]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto px-4 py-8 sm:px-10">
-        <div className="mx-auto w-full max-w-4xl">
+      <div ref={containerRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-10 sm:px-10">
+        <div className="mx-auto w-full max-w-4xl pb-12">
           {session.status === "analyzing" && <AnalyzingState fileName={session.fileName} />}
           {session.status === "error" && (
             <div className="flex flex-col items-center gap-2 py-32 text-center">
@@ -44,7 +66,6 @@ export default function ReportView({
               </ReactMarkdown>
             </article>
           )}
-          <div ref={bottomRef} />
         </div>
       </div>
     </div>

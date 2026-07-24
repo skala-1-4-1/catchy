@@ -7,7 +7,7 @@ export function useTypewriter(
   charsPerTick = 4,
   intervalMs = 15,
 ): string {
-  const [text, setText] = useState(() => (active ? "" : fullText));
+  const [typedText, setTypedText] = useState("");
   const onDoneRef = useRef(onDone);
 
   useEffect(() => {
@@ -18,19 +18,23 @@ export function useTypewriter(
     if (!active) return;
 
     let index = 0;
-    const timer = setInterval(() => {
+    const resetTimer = setTimeout(() => setTypedText(""), 0);
+    const tickTimer = setInterval(() => {
       index += charsPerTick;
       if (index >= fullText.length) {
-        setText(fullText);
-        clearInterval(timer);
+        setTypedText(fullText);
+        clearInterval(tickTimer);
         onDoneRef.current?.();
       } else {
-        setText(fullText.slice(0, index));
+        setTypedText(fullText.slice(0, index));
       }
     }, intervalMs);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(resetTimer);
+      clearInterval(tickTimer);
+    };
   }, [fullText, active, charsPerTick, intervalMs]);
 
-  return text;
+  return active ? typedText : fullText;
 }
