@@ -3,4 +3,5 @@ uvicorn[standard]>=0.30
 crewai[openai,tools]>=1.15,<2.0
 python-dotenv>=1.0
 pandas>=2.0
+openpyxl>=3.1
 pydantic>=2.0
