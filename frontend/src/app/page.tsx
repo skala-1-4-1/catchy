@@ -1,5 +1,5 @@
-import ChatAppLoader from "@/components/ChatAppLoader";
+import ReportAppLoader from "@/components/ReportAppLoader";
 
 export default function Home() {
-  return <ChatAppLoader />;
+  return <ReportAppLoader />;
 }
